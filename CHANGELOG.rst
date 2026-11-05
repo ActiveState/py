@@ -1,3 +1,14 @@
+1.11.0.post1 (2026-11-05)
+=========================
+
+ActiveState security release for Python 2.7.
+
+- Rewrite the ``svn ls -v`` line regex in ``py.path.svnurl`` so a line that
+  does not match fails in linear time instead of backtracking cubically over
+  long runs of spaces (CVE-2022-42969, disputed; no upstream fix).
+- The version is now static (``setup.py`` and ``py/_version.py``) instead of
+  coming from ``setuptools_scm``, so the release builds from a git archive.
+
 1.11.0 (2021-11-04)
 ===================
 
