@@ -91,5 +91,33 @@ class TestSvnInfoCommand:
         assert info.last_author == 'autoadmi'
         assert info.kind == 'dir'
 
+    def test_svn_1_4_locked_and_spaced_author(self):
+        # svn >= 1.4: "%7ld %-8.8s %c %10s %12s %s"; win32 user names may
+        # contain spaces
+        line = "     12 john doe O          7 Jan 02 03:04 locked file.txt"
+        info = InfoSvnCommand(line)
+        assert info.created_rev == 12
+        assert info.last_author == 'john doe O'
+        assert info.size == 7
+        assert info._name == 'locked file.txt'
+        line = "     12 john doe            0 Jan 02 03:04 empty"
+        info = InfoSvnCommand(line)
+        assert info.last_author == 'john doe'
+        assert info.size == 0
+        line = "     12 jd          85058137 Jan 02  2004 big/"
+        info = InfoSvnCommand(line)
+        assert info.last_author == 'jd'
+        assert info.size == 85058137
+        assert info.kind == 'dir'
+
+    def test_lspattern_redos(self):
+        # CVE-2022-42969: a non-matching line with a long run of spaces
+        # used to backtrack cubically (~1s for 500 spaces, minutes for a
+        # few thousand).
+        line = '1 a' + ' ' * 20000 + '!'
+        start = time.time()
+        assert InfoSvnCommand.lspattern.match(line) is None
+        assert time.time() - start < 1.0
+
 def test_badchars():
     py.test.raises(ValueError, "py.path.svnurl('http://host/tmp/@@@:')")
