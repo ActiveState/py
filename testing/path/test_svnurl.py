@@ -113,8 +113,9 @@ class TestSvnInfoCommand:
     def test_lspattern_redos(self):
         # CVE-2022-42969: a non-matching line with a long run of spaces
         # used to backtrack cubically (~1s for 500 spaces, minutes for a
-        # few thousand).
-        line = '1 a' + ' ' * 20000 + '!'
+        # few thousand). 1000 spaces takes 5-8s on the vulnerable pattern,
+        # so a regression fails this test in seconds instead of hanging.
+        line = '1 a' + ' ' * 1000 + '!'
         start = time.time()
         assert InfoSvnCommand.lspattern.match(line) is None
         assert time.time() - start < 1.0
