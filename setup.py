@@ -6,8 +6,10 @@ def main():
         name='py',
         description='library with cross-python path, ini-parsing, io, code, log facilities',
         long_description=open('README.rst').read(),
-        use_scm_version={"write_to": "py/_version.py"},
-        setup_requires=["setuptools_scm"],
+        # ActiveState security releases are built from git archives, which
+        # setuptools_scm cannot version, so the version is static here and in
+        # py/_version.py.
+        version='1.11.0.post1',
         url='https://py.readthedocs.io/',
         license='MIT license',
         platforms=['unix', 'linux', 'osx', 'cygwin', 'win32'],

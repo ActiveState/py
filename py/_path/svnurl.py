@@ -313,9 +313,16 @@ if verbose is True, then the LogEntry instances also know which files changed.
 class InfoSvnCommand:
     # the '0?' part in the middle is an indication of whether the resource is
     # locked, see 'svn help ls'
+    #
+    # Every run of spaces is bounded by non-space tokens on both sides (the
+    # author starts and ends with a non-space character, the optional
+    # lock/size group ends in mandatory spaces) so a line that does not
+    # match fails in linear time instead of backtracking cubically over
+    # long runs of spaces (CVE-2022-42969).
     lspattern = re.compile(
-        r'^ *(?P<rev>\d+) +(?P<author>.+?) +(0? *(?P<size>\d+))? '
-            r'*(?P<date>\w+ +\d{2} +[\d:]+) +(?P<file>.*)$')
+        r'^ *(?P<rev>\d+) +(?P<author>\S(?:.*?\S)??) +'
+        r'(?:(?:0 +)?(?P<size>\d+) +)?'
+        r'(?P<date>\w+ +\d{2} +[\d:]+) +(?P<file>.*)$')
     def __init__(self, line):
         # this is a typical line from 'svn ls http://...'
         #_    1127      jum        0 Jul 13 15:28 branch/
